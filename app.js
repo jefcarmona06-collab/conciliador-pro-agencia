@@ -1,29 +1,33 @@
+// ------------------------------------------------
+//  Conciliador Pro – Lógica del Frontend
+// ------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-    
-    // Alertas Helper
-    function showAlert(containerId, type, message) {
+    /* ---------- HELPERS ---------- */
+    const showAlert = (containerId, type, message) => {
         const container = document.getElementById(containerId);
         container.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>`;
-    }
+    };
 
-    // Formatear moneda
-    function formatBs(amount) {
-        return parseFloat(amount).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Bs';
-    }
+    const formatBs = amount => {
+        return parseFloat(amount).toLocaleString('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }) + ' Bs';
+    };
 
-    // --- BÚSQUEDA Y REGISTRO ---
+    /* ---------- BÚSQUEDA Y REGISTRO ---------- */
     document.getElementById("btn-buscar").addEventListener("click", async () => {
-        const ref = document.getElementById("search-ref").value;
+        const ref = document.getElementById("search-ref").value.trim();
+
         if (ref.length !== 4) {
-            showAlert("search-result", "warning", "Por favor ingresa los últimos 4 dígitos.");
+            showAlert("search-result", "warning", "Ingresa exactamente 4 dígitos.");
             return;
         }
-
-        if (API_URL === "URL_DE_TU_APPS_SCRIPT_AQUI") {
-            showAlert("search-result", "danger", "Falta configurar la API_URL en el index.html");
+        if (API_URL.includes("URL_DE_TU_APPS_SCRIPT_AQUI")) {
+            showAlert("search-result", "danger", "Configura la constant API_URL en index.html.");
             return;
         }
 
@@ -31,7 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const res = await fetch(`${API_URL}?action=buscarRef&ref=${ref}`);
             const data = await res.json();
-            
+
+            // --- Respuestas del backend ---
             if (data.status === "reembolsado") {
                 showAlert("search-result", "danger", "❌ Este pago ya fue REEMBOLSADO.");
                 document.getElementById("form-registro").style.display = "none";
@@ -39,76 +44,89 @@ document.addEventListener("DOMContentLoaded", () => {
                 showAlert("search-result", "warning", "⚠️ Referencia no encontrada en el banco.");
                 document.getElementById("form-registro").style.display = "none";
             } else if (data.status === "ya_asignado") {
-                showAlert("search-result", "info", `ℹ️ Esta referencia ya está asignada al alumno: <b>${data.alumno.Nombre}</b>`);
+                const alumno = data.alumno;
+                showAlert("search-result", "info",
+                    `ℹ️ Esta referencia ya está asignada a: <b>${alumno.Nombre}</b> — Monto: <b>${formatBs(alumno.monto)}</b> — Fecha del abono: <b>${alumno.fecha}</b>`);
                 document.getElementById("form-registro").style.display = "none";
             } else if (data.status === "ok") {
-                showAlert("search-result", "success", `✅ ¡Pago encontrado! Monto: <b>${formatBs(data.monto)}</b>`);
+                // Pago encontrado, mostramos monto y fecha del abono
+                showAlert("search-result", "success",
+                    `✅ Pago encontrado — Monto: <b>${formatBs(data.monto)}</b> — Fecha del abono: <b>${data.fecha}</b>`);
                 document.getElementById("form-registro").style.display = "block";
+            } else {
+                showAlert("search-result", "danger", "Respuesta inesperada del servidor.");
             }
         } catch (e) {
-            showAlert("search-result", "danger", "Error de conexión con Google Sheets.");
+            showAlert("search-result", "danger", "Error de conexión con la API.");
         }
         document.getElementById("btn-buscar").innerText = "Buscar";
     });
 
+    // Guardar / Conciliar
     document.getElementById("btn-guardar").addEventListener("click", async () => {
-        const ref = document.getElementById("search-ref").value;
-        const id = document.getElementById("reg-id").value;
-        const nombre = document.getElementById("reg-nombre").value;
-        const tipo = document.getElementById("reg-tipo").value;
-        const fecha = document.getElementById("reg-fecha").value;
-        const colegio = document.getElementById("reg-colegio").value;
+        const ref      = document.getElementById("search-ref").value.trim();
+        const tipo     = document.getElementById("reg-tipo").value;
+        const fecha    = document.getElementById("reg-fecha").value;
+        const colegio  = document.getElementById("reg-colegio").value;
         const profesor = document.getElementById("reg-profesor").value;
+        const obs      = document.getElementById("reg-observacion").value;
 
-        if (!id || !nombre || !tipo) {
-            alert("Completa los campos obligatorios (*)");
+        if (!tipo || !fecha) {
+            alert("Los campos Tipo de Evento y Fecha del Evento son obligatorios.");
             return;
         }
 
         document.getElementById("btn-guardar").innerText = "Guardando...";
         try {
-            const res = await fetch(`${API_URL}?action=registrar&ref=${ref}&id=${encodeURIComponent(id)}&nombre=${encodeURIComponent(nombre)}&tipo=${encodeURIComponent(tipo)}&fecha=${encodeURIComponent(fecha)}&colegio=${encodeURIComponent(colegio)}&profesor=${encodeURIComponent(profesor)}`);
+            const url = `${API_URL}?action=registrar&ref=${ref}`
+                + `&tipo=${encodeURIComponent(tipo)}`
+                + `&fecha=${encodeURIComponent(fecha)}`
+                + `&colegio=${encodeURIComponent(colegio)}`
+                + `&profesor=${encodeURIComponent(profesor)}`
+                + `&observacion=${encodeURIComponent(obs)}`;
+
+            const res = await fetch(url);
             const data = await res.json();
+
             if (data.status === "ok") {
                 alert("¡Registrado exitosamente!");
+                // Reset UI
                 document.getElementById("form-registro").style.display = "none";
                 document.getElementById("search-ref").value = "";
-                // Reset form
-                document.getElementById("reg-id").value = "";
-                document.getElementById("reg-nombre").value = "";
                 document.getElementById("reg-fecha").value = "";
                 document.getElementById("reg-colegio").value = "";
                 document.getElementById("reg-profesor").value = "";
+                document.getElementById("reg-observacion").value = "";
                 document.getElementById("search-result").innerHTML = "";
             } else {
-                alert("Error al registrar: " + data.message);
+                alert("Error al registrar: " + (data.message || "desconocido"));
             }
         } catch (e) {
-            alert("Error de conexión.");
+            alert("Error de conexión con la API.");
         }
         document.getElementById("btn-guardar").innerText = "Guardar y Conciliar";
     });
 
-
-    // --- DASHBOARD ---
+    /* ---------- DASHBOARD ---------- */
     async function loadDashboard() {
-        if (API_URL === "URL_DE_TU_APPS_SCRIPT_AQUI") return;
-        
+        if (API_URL.includes("URL_DE_TU_APPS_SCRIPT_AQUI")) return;
+
         document.getElementById("kpi-ingresos").innerText = "...";
         document.getElementById("kpi-reembolsos").innerText = "...";
         document.getElementById("kpi-neto").innerText = "...";
-        
+
         try {
             const res = await fetch(`${API_URL}?action=getDashboard`);
             const data = await res.json();
-            
+
+            // KPI
             document.getElementById("kpi-ingresos").innerText = formatBs(data.ingresos);
             document.getElementById("kpi-reembolsos").innerText = formatBs(data.reembolsos);
             document.getElementById("kpi-neto").innerText = formatBs(data.neto);
 
+            // DESGLOSE POR EVENTO
             const tbodyEventos = document.querySelector("#table-eventos tbody");
             tbodyEventos.innerHTML = "";
-            
             for (const [evento, monto] of Object.entries(data.desglose)) {
                 tbodyEventos.innerHTML += `<tr>
                     <td>${evento}</td>
@@ -116,48 +134,75 @@ document.addEventListener("DOMContentLoaded", () => {
                 </tr>`;
             }
 
+            // DESGLOSE POR COLEGIO (con submenú de profesores)
             const tbodyColegios = document.querySelector("#table-colegios tbody");
-            if (tbodyColegios) {
-                tbodyColegios.innerHTML = "";
-                for (const [colegio, monto] of Object.entries(data.desgloseColegios || {})) {
-                    if (colegio.trim() !== "") {
-                        tbodyColegios.innerHTML += `<tr>
-                            <td>${colegio}</td>
-                            <td class="text-end fw-bold">${formatBs(monto)}</td>
-                        </tr>`;
-                    }
-                }
+            tbodyColegios.innerHTML = "";
+            let idx = 0;
+            for (const [colegio, info] of Object.entries(data.desgloseColegios || {})) {
+                const total = info.total || 0;
+                const profs = info.profesores || {};
+
+                tbodyColegios.innerHTML += `
+                    <tr>
+                        <td>${colegio}</td>
+                        <td class="text-end fw-bold">${formatBs(total)}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-light"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#prof-${idx}"
+                                    aria-expanded="false"
+                                    aria-controls="prof-${idx}">▶</button>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="prof-${idx}">
+                        <td colspan="3">
+                            <table class="table table-sm table-dark mb-0">
+                                <thead>
+                                    <tr class="border-bottom border-secondary">
+                                        <th>Profesor</th>
+                                        <th class="text-end">Monto (Bs)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${Object.entries(profs).map(([prof, mnt]) => `
+                                        <tr>
+                                            <td>${prof}</td>
+                                            <td class="text-end fw-bold">${formatBs(mnt)}</td>
+                                        </tr>`).join("")}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>`;
+                idx++;
             }
         } catch (e) {
-            console.error("Error al cargar dashboard", e);
+            console.error("Error al cargar el dashboard", e);
         }
     }
 
     document.getElementById("tab-dashboard").addEventListener("click", loadDashboard);
     document.getElementById("btn-refresh-dashboard").addEventListener("click", loadDashboard);
 
-
-    // --- REEMBOLSOS ---
-    let montoAReembolsar = 0;
+    /* ---------- REEMBOLSOS ---------- */
     document.getElementById("btn-buscar-reemb").addEventListener("click", async () => {
-        const ref = document.getElementById("reemb-ref").value;
+        const ref = document.getElementById("reemb-ref").value.trim();
         if (ref.length !== 4) return;
 
         document.getElementById("btn-buscar-reemb").innerText = "...";
         try {
-            // Reutiliza el buscar, pero verifica que sí exista en Registro (Conciliado)
             const res = await fetch(`${API_URL}?action=buscarRef&ref=${ref}`);
             const data = await res.json();
-            
+
             if (data.status === "ya_asignado") {
-                showAlert("reemb-result", "success", `Pago encontrado: <b>${data.alumno.Nombre}</b> (${formatBs(data.alumno.monto)})`);
-                montoAReembolsar = data.alumno.monto;
+                showAlert("reemb-result", "success",
+                    `Pago encontrado: <b>${data.alumno.Nombre}</b> — Monto: <b>${formatBs(data.alumno.monto)}</b>`);
+                window.montoAReembolsar = data.alumno.monto;
                 document.getElementById("form-reembolso").style.display = "block";
             } else if (data.status === "reembolsado") {
                 showAlert("reemb-result", "danger", "Este pago ya fue reembolsado.");
                 document.getElementById("form-reembolso").style.display = "none";
             } else {
-                showAlert("reemb-result", "warning", "Esta referencia no ha sido conciliada (No se puede reembolsar).");
+                showAlert("reemb-result", "warning", "Referencia no conciliada – no se puede reembolsar.");
                 document.getElementById("form-reembolso").style.display = "none";
             }
         } catch (e) {
@@ -167,14 +212,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("btn-procesar-reemb").addEventListener("click", async () => {
-        const ref = document.getElementById("reemb-ref").value;
+        const ref = document.getElementById("reemb-ref").value.trim();
         const motivo = document.getElementById("reemb-motivo").value || "Cancelación";
-        
-        if (!confirm(`¿Estás seguro de reembolsar la ref ${ref}?`)) return;
+
+        if (!confirm(`¿Confirmas el reembolso de la referencia ${ref}?`)) return;
 
         document.getElementById("btn-procesar-reemb").innerText = "Procesando...";
         try {
-            const res = await fetch(`${API_URL}?action=reembolsar&ref=${ref}&motivo=${encodeURIComponent(motivo)}&monto=${montoAReembolsar}`);
+            const res = await fetch(`${API_URL}?action=reembolsar&ref=${ref}&motivo=${encodeURIComponent(motivo)}&monto=${window.montoAReembolsar}`);
             const data = await res.json();
             if (data.status === "ok") {
                 alert("Reembolso procesado exitosamente.");
@@ -182,11 +227,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("reemb-ref").value = "";
                 document.getElementById("reemb-motivo").value = "";
                 document.getElementById("reemb-result").innerHTML = "";
+            } else {
+                alert("Error al procesar reembolso.");
             }
         } catch (e) {
-            alert("Error al reembolsar.");
+            alert("Error de conexión.");
         }
         document.getElementById("btn-procesar-reemb").innerText = "Procesar Reembolso Definitivo";
     });
-
 });
