@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const tipo = document.getElementById("reg-tipo").value;
         const fecha = document.getElementById("reg-fecha").value;
         const colegio = document.getElementById("reg-colegio").value;
+        const profesor = document.getElementById("reg-profesor").value;
 
         if (!id || !nombre || !tipo) {
             alert("Completa los campos obligatorios (*)");
@@ -66,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("btn-guardar").innerText = "Guardando...";
         try {
-            const res = await fetch(`${API_URL}?action=registrar&ref=${ref}&id=${encodeURIComponent(id)}&nombre=${encodeURIComponent(nombre)}&tipo=${encodeURIComponent(tipo)}&fecha=${encodeURIComponent(fecha)}&colegio=${encodeURIComponent(colegio)}`);
+            const res = await fetch(`${API_URL}?action=registrar&ref=${ref}&id=${encodeURIComponent(id)}&nombre=${encodeURIComponent(nombre)}&tipo=${encodeURIComponent(tipo)}&fecha=${encodeURIComponent(fecha)}&colegio=${encodeURIComponent(colegio)}&profesor=${encodeURIComponent(profesor)}`);
             const data = await res.json();
             if (data.status === "ok") {
                 alert("¡Registrado exitosamente!");
@@ -77,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("reg-nombre").value = "";
                 document.getElementById("reg-fecha").value = "";
                 document.getElementById("reg-colegio").value = "";
+                document.getElementById("reg-profesor").value = "";
                 document.getElementById("search-result").innerHTML = "";
             } else {
                 alert("Error al registrar: " + data.message);
@@ -104,14 +106,27 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("kpi-reembolsos").innerText = formatBs(data.reembolsos);
             document.getElementById("kpi-neto").innerText = formatBs(data.neto);
 
-            const tbody = document.querySelector("#table-eventos tbody");
-            tbody.innerHTML = "";
+            const tbodyEventos = document.querySelector("#table-eventos tbody");
+            tbodyEventos.innerHTML = "";
             
             for (const [evento, monto] of Object.entries(data.desglose)) {
-                tbody.innerHTML += `<tr>
+                tbodyEventos.innerHTML += `<tr>
                     <td>${evento}</td>
                     <td class="text-end fw-bold">${formatBs(monto)}</td>
                 </tr>`;
+            }
+
+            const tbodyColegios = document.querySelector("#table-colegios tbody");
+            if (tbodyColegios) {
+                tbodyColegios.innerHTML = "";
+                for (const [colegio, monto] of Object.entries(data.desgloseColegios || {})) {
+                    if (colegio.trim() !== "") {
+                        tbodyColegios.innerHTML += `<tr>
+                            <td>${colegio}</td>
+                            <td class="text-end fw-bold">${formatBs(monto)}</td>
+                        </tr>`;
+                    }
+                }
             }
         } catch (e) {
             console.error("Error al cargar dashboard", e);
