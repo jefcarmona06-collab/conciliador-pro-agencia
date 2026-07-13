@@ -90,6 +90,7 @@
     if (btnRefresh) btnRefresh.style.display = panelId === "panel-dashboard" ? "" : "none";
 
     if (panelId === "panel-dashboard") loadDashboard();
+  }
 
   document.querySelectorAll(".nav-tab").forEach(btn => {
     btn.addEventListener("click", () => switchPanel(btn.dataset.panel));
