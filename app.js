@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         if (API_URL.includes("URL_DE_TU_APPS_SCRIPT_AQUI")) {
-            showAlert("search-result", "danger", "Configura la constant API_URL en index.html.");
+            showAlert("search-result", "danger", "Configura la constante API_URL en index.html.");
             return;
         }
 
@@ -83,8 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const profesor = document.getElementById("reg-profesor").value;
         const obs      = document.getElementById("reg-observacion").value;
 
-        if (!tipo || !fecha) {
-            alert("Los campos Tipo de Evento y Fecha del Evento son obligatorios.");
+        // 👉  Sólo el tipo es obligatorio; la fecha es opcional
+        if (!tipo) {
+            alert("El campo Tipo de Evento es obligatorio.");
             return;
         }
 
@@ -123,9 +124,10 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadDashboard() {
         if (API_URL.includes("URL_DE_TU_APPS_SCRIPT_AQUI")) return;
 
-        document.getElementById("kpi-ingresos").innerText = "...";
+        // ---- KPIs ----
+        document.getElementById("kpi-ingresos").innerText    = "...";
         document.getElementById("kpi-reembolsos").innerText = "...";
-        document.getElementById("kpi-neto").innerText = "...";
+        document.getElementById("kpi-neto").innerText      = "...";
 
         try {
             const res  = await fetch(`${API_URL}?action=getDashboard`);
@@ -140,13 +142,43 @@ document.addEventListener("DOMContentLoaded", () => {
             const tbodyEventos = document.querySelector("#table-eventos tbody");
             tbodyEventos.innerHTML = "";
             for (const [evento, monto] of Object.entries(data.desglose)) {
-                tbodyEventos.innerHTML += `<tr>
-                    <td>${evento}</td>
-                    <td class="text-end fw-bold">${formatBs(monto)}</td>
-                </tr>`;
+                tbodyEventos.innerHTML += `
+                    <tr>
+                        <td>${evento}</td>
+                        <td class="text-end fw-bold">${formatBs(monto)}</td>
+                    </tr>`;
             }
 
-            // ----- Desglose por Colegio (submenú de Profesores) -----
+            // ----- Gráfico de Eventos (Chart.js) -----
+            const ctxEvt = document.getElementById("chart-eventos").getContext("2d");
+            const labelsEvt = Object.keys(data.desglose);
+            const dataEvt   = Object.values(data.desglose);
+            if (window.chartEventos) window.chartEventos.destroy();
+            window.chartEventos = new Chart(ctxEvt, {
+                type: "bar",
+                data: {
+                    labels: labelsEvt,
+                    datasets: [{
+                        label: "Monto por Evento",
+                        data: dataEvt,
+                        backgroundColor: "rgba(59,130,246,0.6)",
+                        borderColor: "rgba(59,130,246,1)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => formatBs(v) }
+                        }
+                    }
+                }
+            });
+
+            // ----- Desglose por Colegio (con sub‑menú de Profesores) -----
             const tbodyColegios = document.querySelector("#table-colegios tbody");
             tbodyColegios.innerHTML = "";
             let idx = 0;
@@ -156,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 tbodyColegios.innerHTML += `
                     <tr>
-                        <td>${colegio}</td>
+                        <td>${info.nombre || colegio}</td>   <!-- nombre del colegio -->
                         <td class="text-end fw-bold">${formatBs(total)}</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-outline-light"
@@ -187,6 +219,62 @@ document.addEventListener("DOMContentLoaded", () => {
                     </tr>`;
                 idx++;
             }
+
+            // ----- Filtro por Colegio -----
+            const filterSelect = document.getElementById("filter-colegio");
+            filterSelect.innerHTML = `<option value="">Todos los colegios</option>`;
+            for (const coleg in data.desgloseColegios || {}) {
+                const opt = document.createElement("option");
+                opt.value = coleg;
+                opt.textContent = data.desgloseColegios[coleg].nombre || coleg;
+                filterSelect.appendChild(opt);
+            }
+
+            filterSelect.onchange = () => {
+                const valor = filterSelect.value.trim();
+                document.querySelectorAll(".colegio-row").forEach(tr => {
+                    const rowColeg = tr.dataset.colegio;
+                    if (!valor || rowColeg === valor) {
+                        tr.style.display = "";
+                        const collapseId = tr.querySelector("button[data-bs-target]").getAttribute("data-bs-target");
+                        document.querySelector(collapseId).style.display = "";
+                    } else {
+                        tr.style.display = "none";
+                        const collapseId = tr.querySelector("button[data-bs-target]").getAttribute("data-bs-target");
+                        document.querySelector(collapseId).style.display = "none";
+                    }
+                });
+            };
+
+            // ----- Gráfico de Colegios -----
+            const ctxCol = document.getElementById("chart-colegios").getContext("2d");
+            const labelsCol = Object.keys(data.desgloseColegios || {});
+            const dataCol   = labelsCol.map(c => data.desgloseColegios[c].total || 0);
+            if (window.chartColegios) window.chartColegios.destroy();
+            window.chartColegios = new Chart(ctxCol, {
+                type: "bar",
+                data: {
+                    labels: labelsCol,
+                    datasets: [{
+                        label: "Monto por Colegio",
+                        data: dataCol,
+                        backgroundColor: "rgba(16,185,129,0.6)",
+                        borderColor: "rgba(16,185,129,1)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => formatBs(v) }
+                        }
+                    }
+                }
+            });
+
         } catch (e) {
             console.error("Error al cargar el dashboard", e);
         }

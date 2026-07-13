@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conciliador Pro v3</title>
+
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Nuestro estilo -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,22 +15,37 @@
         <h1 class="text-center mb-5 text-white title-glow">Conciliador Pro 💸</h1>
 
         <!-- --------------- NAVBAR --------------- -->
-        <ul class="nav nav-pills justify-content-center mb-4 glass-nav" id="pills-tab" role="tablist">
-            <li class="nav-item" role="presentation"><button class="nav-link active" id="tab-registro" data-bs-toggle="pill" data-bs-target="#panel-registro" type="button">🔍 Búsqueda y Registro</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link" id="tab-dashboard" data-bs-toggle="pill" data-bs-target="#panel-dashboard" type="button">📊 Dashboard</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link" id="tab-reembolsos" data-bs-toggle="pill" data-bs-target="#panel-reembolsos" type="button">↩️ Reembolsos</button></li>
+        <ul class="nav nav-pills justify-content-center mb-4 glass-nav"
+            id="pills-tab" role="tablist">
+            <li class="nav-item"><button class="nav-link active"
+                id="tab-registro"
+                data-bs-toggle="pill"
+                data-bs-target="#panel-registro"
+                type="button">🔍 Búsqueda y Registro</button></li>
+            <li class="nav-item"><button class="nav-link"
+                id="tab-dashboard"
+                data-bs-toggle="pill"
+                data-bs-target="#panel-dashboard"
+                type="button">📊 Dashboard</button></li>
+            <li class="nav-item"><button class="nav-link"
+                id="tab-reembolsos"
+                data-bs-toggle="pill"
+                data-bs-target="#panel-reembolsos"
+                type="button">↩️ Reembolsos</button></li>
         </ul>
 
-        <!-- --------------- PANELES --------------- -->
         <div class="tab-content" id="pills-tabContent">
 
             <!-- ==== PANEL REGISTRO ==== -->
-            <div class="tab-pane fade show active" id="panel-registro" role="tabpanel">
+            <div class="tab-pane fade show active"
+                 id="panel-registro" role="tabpanel">
                 <div class="glass-card">
                     <h3 class="mb-4 text-white">Registro de Eventos</h3>
 
                     <div class="input-group mb-3">
-                        <input type="text" id="search-ref" class="form-control" placeholder="Ingrese últimos 4 dígitos de la referencia..." maxlength="4">
+                        <input type="text" id="search-ref" class="form-control"
+                               placeholder="Ingrese últimos 4 dígitos de la referencia..."
+                               maxlength="4">
                         <button class="btn btn-primary" type="button" id="btn-buscar">Buscar</button>
                     </div>
 
@@ -51,7 +69,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Fecha del Evento *</label>
+                                <label class="form-label">Fecha del Evento (opcional)</label>
                                 <input type="date" class="form-control" id="reg-fecha">
                             </div>
 
@@ -67,11 +85,13 @@
 
                             <div class="col-12">
                                 <label class="form-label">Observación (opcional)</label>
-                                <input type="text" class="form-control" id="reg-observacion" placeholder="Ej. Cancelación por viaje, nota interna, etc.">
+                                <input type="text" class="form-control" id="reg-observacion"
+                                       placeholder="Ej. Cancelación por viaje, nota interna, etc.">
                             </div>
 
                             <div class="col-12 text-end mt-4">
-                                <button class="btn btn-success btn-lg px-5 shadow" id="btn-guardar">Guardar y Conciliar</button>
+                                <button class="btn btn-success btn-lg px-5 shadow"
+                                        id="btn-guardar">Guardar y Conciliar</button>
                             </div>
                         </div>
                     </div>
@@ -79,7 +99,10 @@
             </div>
 
             <!-- ==== PANEL DASHBOARD ==== -->
-            <div class="tab-pane fade" id="panel-dashboard" role="tabpanel">
+            <div class="tab-pane fade"
+                 id="panel-dashboard" role="tabpanel">
+
+                <!-- KPIs -->
                 <div class="row text-center mb-4 g-4">
                     <div class="col-md-4">
                         <div class="glass-card kpi-card border-primary">
@@ -101,13 +124,23 @@
                     </div>
                 </div>
 
+                <!-- Filtro por colegio -->
+                <div class="d-flex justify-content-end mb-3">
+                    <select id="filter-colegio"
+                            class="form-select filter-select">
+                        <option value="">Todos los colegios</option>
+                    </select>
+                </div>
+
+                <!-- DESGLOSES -->
                 <div class="row g-4">
-                    <!-- DESGLOSE POR EVENTO -->
+                    <!-- Evento -->
                     <div class="col-md-6">
                         <div class="glass-card text-white h-100">
                             <h4 class="mb-3">Desglose por Evento</h4>
                             <div class="table-responsive">
-                                <table class="table table-dark table-hover table-borderless" id="table-eventos">
+                                <table class="table table-dark table-hover table-borderless"
+                                       id="table-eventos">
                                     <thead>
                                         <tr class="border-bottom border-secondary">
                                             <th>Tipo de Evento</th>
@@ -117,15 +150,19 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-eventos"></canvas>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- DESGLOSE POR COLEGIO (con submenú de profesores) -->
+                    <!-- Colegio (con sub‑menú de profesores) -->
                     <div class="col-md-6">
                         <div class="glass-card text-white h-100">
                             <h4 class="mb-3">Desglose por Colegio</h4>
                             <div class="table-responsive">
-                                <table class="table table-dark table-hover table-borderless" id="table-colegios">
+                                <table class="table table-dark table-hover table-borderless"
+                                       id="table-colegios">
                                     <thead>
                                         <tr class="border-bottom border-secondary">
                                             <th>Colegio</th>
@@ -136,23 +173,30 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-colegios"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <button class="btn btn-outline-light btn-sm mt-4 w-100" id="btn-refresh-dashboard">Actualizar Dashboard</button>
+                <button class="btn btn-outline-light btn-sm mt-4 w-100"
+                        id="btn-refresh-dashboard">Actualizar Dashboard</button>
             </div>
 
             <!-- ==== PANEL REEMBOLSOS ==== -->
-            <div class="tab-pane fade" id="panel-reembolsos" role="tabpanel">
+            <div class="tab-pane fade"
+                 id="panel-reembolsos" role="tabpanel">
                 <div class="glass-card text-white">
                     <h3 class="mb-4">Gestión de Cancelaciones / Devoluciones</h3>
 
                     <div class="mb-3">
                         <label class="form-label">Buscar Referencia a Reversar (Últimos 4 dígitos):</label>
                         <div class="input-group mb-3">
-                            <input type="text" id="reemb-ref" class="form-control" placeholder="Ej. 5102" maxlength="4">
-                            <button class="btn btn-secondary" type="button" id="btn-buscar-reemb">Verificar</button>
+                            <input type="text" id="reemb-ref" class="form-control"
+                                   placeholder="Ej. 5102" maxlength="4">
+                            <button class="btn btn-secondary" type="button"
+                                    id="btn-buscar-reemb">Verificar</button>
                         </div>
                     </div>
 
@@ -161,9 +205,12 @@
                     <div id="form-reembolso" style="display:none;">
                         <div class="mb-3">
                             <label class="form-label">Motivo de la cancelación:</label>
-                            <input type="text" class="form-control" id="reemb-motivo" placeholder="Ej. Cancelación por viaje">
+                            <input type="text" class="form-control"
+                                   id="reemb-motivo"
+                                   placeholder="Ej. Cancelación por viaje">
                         </div>
-                        <button class="btn btn-danger w-100" id="btn-procesar-reemb">Procesar Reembolso Definitivo</button>
+                        <button class="btn btn-danger w-100"
+                                id="btn-procesar-reemb">Procesar Reembolso Definitivo</button>
                     </div>
                 </div>
             </div>
@@ -173,11 +220,12 @@
 
     <!-- ---------- CONFIGURACIÓN DE LA API ---------- -->
     <script>
-        // 👉 REEMPLAZA ESTO CON LA URL DE TU Apps Script (desplegada como Web‑App)
-        const API_URL = "https://script.google.com/macros/s/AKfycbxYXOnCDrSRh5B8-aDk5N8Kx-CNQ1JZOVHxReriFsJtsvxL_17J5e3RJCYLS3fdj1q5DA/exec";
+        // 👉 REEMPLAZA ESTA CONSTANTE CON LA URL DE TU Apps Script (desplegada como Web‑App)
+        const API_URL = "https://script.google.com/macros/s/AKfycbyDYIGKtJTqG2Q95ixw3BdeKL44NYLRO9fftRwCHBFAKF7anf0Hzyy3QFv3jRnQQCjvjA/exec";
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
