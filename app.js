@@ -11,11 +11,22 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>`;
     };
 
+    // Formatea número como moneda boliviana con separadores de miles
     const formatBs = amount => {
         return parseFloat(amount).toLocaleString('es-ES', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }) + ' Bs';
+    };
+
+    // Formatea fecha ISO → DD/MM/AAAA
+    const formatDate = iso => {
+        if (!iso) return '';
+        const d = new Date(iso);
+        const day   = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year  = d.getFullYear();
+        return `${day}/${month}/${year}`;
     };
 
     /* ---------- BÚSQUEDA Y REGISTRO ---------- */
@@ -33,10 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("btn-buscar").innerText = "Buscando...";
         try {
-            const res = await fetch(`${API_URL}?action=buscarRef&ref=${ref}`);
+            const res  = await fetch(`${API_URL}?action=buscarRef&ref=${ref}`);
             const data = await res.json();
 
-            // --- Respuestas del backend ---
+            // ----- Respuestas del backend -----
             if (data.status === "reembolsado") {
                 showAlert("search-result", "danger", "❌ Este pago ya fue REEMBOLSADO.");
                 document.getElementById("form-registro").style.display = "none";
@@ -44,14 +55,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 showAlert("search-result", "warning", "⚠️ Referencia no encontrada en el banco.");
                 document.getElementById("form-registro").style.display = "none";
             } else if (data.status === "ya_asignado") {
-                const alumno = data.alumno;
+                const alumno   = data.alumno;
+                const fechaFmt = formatDate(alumno.fecha);
                 showAlert("search-result", "info",
-                    `ℹ️ Esta referencia ya está asignada a: <b>${alumno.Nombre}</b> — Monto: <b>${formatBs(alumno.monto)}</b> — Fecha del abono: <b>${alumno.fecha}</b>`);
+                    `ℹ️ Esta referencia ya está asignada a: <b>${alumno.Nombre}</b> — Monto: <b>${formatBs(alumno.monto)}</b> — Fecha del abono: <b>${fechaFmt}</b>`);
                 document.getElementById("form-registro").style.display = "none";
             } else if (data.status === "ok") {
-                // Pago encontrado, mostramos monto y fecha del abono
+                const fechaFmt = formatDate(data.fecha);
                 showAlert("search-result", "success",
-                    `✅ Pago encontrado — Monto: <b>${formatBs(data.monto)}</b> — Fecha del abono: <b>${data.fecha}</b>`);
+                    `✅ Pago encontrado — Monto: <b>${formatBs(data.monto)}</b> — Fecha del abono: <b>${fechaFmt}</b>`);
                 document.getElementById("form-registro").style.display = "block";
             } else {
                 showAlert("search-result", "danger", "Respuesta inesperada del servidor.");
@@ -62,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("btn-buscar").innerText = "Buscar";
     });
 
-    // Guardar / Conciliar
+    // ---- Guardar / Conciliar ----
     document.getElementById("btn-guardar").addEventListener("click", async () => {
         const ref      = document.getElementById("search-ref").value.trim();
         const tipo     = document.getElementById("reg-tipo").value;
@@ -85,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 + `&profesor=${encodeURIComponent(profesor)}`
                 + `&observacion=${encodeURIComponent(obs)}`;
 
-            const res = await fetch(url);
+            const res  = await fetch(url);
             const data = await res.json();
 
             if (data.status === "ok") {
@@ -116,15 +128,15 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("kpi-neto").innerText = "...";
 
         try {
-            const res = await fetch(`${API_URL}?action=getDashboard`);
+            const res  = await fetch(`${API_URL}?action=getDashboard`);
             const data = await res.json();
 
-            // KPI
-            document.getElementById("kpi-ingresos").innerText = formatBs(data.ingresos);
+            // ----- KPI (ya incluyen separadores de miles) -----
+            document.getElementById("kpi-ingresos").innerText    = formatBs(data.ingresos);
             document.getElementById("kpi-reembolsos").innerText = formatBs(data.reembolsos);
-            document.getElementById("kpi-neto").innerText = formatBs(data.neto);
+            document.getElementById("kpi-neto").innerText      = formatBs(data.neto);
 
-            // DESGLOSE POR EVENTO
+            // ----- Desglose por Evento -----
             const tbodyEventos = document.querySelector("#table-eventos tbody");
             tbodyEventos.innerHTML = "";
             for (const [evento, monto] of Object.entries(data.desglose)) {
@@ -134,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </tr>`;
             }
 
-            // DESGLOSE POR COLEGIO (con submenú de profesores)
+            // ----- Desglose por Colegio (submenú de Profesores) -----
             const tbodyColegios = document.querySelector("#table-colegios tbody");
             tbodyColegios.innerHTML = "";
             let idx = 0;
@@ -190,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("btn-buscar-reemb").innerText = "...";
         try {
-            const res = await fetch(`${API_URL}?action=buscarRef&ref=${ref}`);
+            const res  = await fetch(`${API_URL}?action=buscarRef&ref=${ref}`);
             const data = await res.json();
 
             if (data.status === "ya_asignado") {
@@ -212,14 +224,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("btn-procesar-reemb").addEventListener("click", async () => {
-        const ref = document.getElementById("reemb-ref").value.trim();
+        const ref    = document.getElementById("reemb-ref").value.trim();
         const motivo = document.getElementById("reemb-motivo").value || "Cancelación";
 
         if (!confirm(`¿Confirmas el reembolso de la referencia ${ref}?`)) return;
 
         document.getElementById("btn-procesar-reemb").innerText = "Procesando...";
         try {
-            const res = await fetch(`${API_URL}?action=reembolsar&ref=${ref}&motivo=${encodeURIComponent(motivo)}&monto=${window.montoAReembolsar}`);
+            const res  = await fetch(`${API_URL}?action=reembolsar&ref=${ref}&motivo=${encodeURIComponent(motivo)}&monto=${window.montoAReembolsar}`);
             const data = await res.json();
             if (data.status === "ok") {
                 alert("Reembolso procesado exitosamente.");
