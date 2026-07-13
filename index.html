@@ -3,100 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Conciliador Pro – Dashboard</title>
-  <meta name="description" content="Sistema de conciliación de pagos con desglose por evento y colegio." />
-
-  <!-- Google Fonts -->
+  <title>Conciliador Pro</title>
+  <meta name="description" content="Sistema de conciliación de pagos bancarios." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       SIDEBAR
-  ═══════════════════════════════════════════ -->
+  <!-- ═══════ SIDEBAR ═══════ -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <span class="brand-icon">💸</span>
-      <span class="brand-text">Conciliador</span>
+      <span class="brand-text">Conciliador Pro</span>
     </div>
-
     <nav class="sidebar-nav">
-      <button class="nav-item active" id="nav-registro" data-panel="panel-registro">
+      <button class="nav-item active" data-panel="panel-registro">
         <span class="nav-icon">🔍</span>
         <span class="nav-label">Búsqueda y Registro</span>
       </button>
-      <button class="nav-item" id="nav-dashboard" data-panel="panel-dashboard">
+      <button class="nav-item" data-panel="panel-dashboard" id="nav-dashboard">
         <span class="nav-icon">📊</span>
         <span class="nav-label">Dashboard</span>
       </button>
-      <button class="nav-item" id="nav-reembolsos" data-panel="panel-reembolsos">
+      <button class="nav-item" data-panel="panel-reembolsos">
         <span class="nav-icon">↩️</span>
         <span class="nav-label">Reembolsos</span>
       </button>
     </nav>
-
     <div class="sidebar-footer">
-      <span class="version-badge">v3.0</span>
+      <span class="version-badge">v3.1</span>
     </div>
   </aside>
 
-  <!-- ═══════════════════════════════════════════
-       MAIN CONTENT
-  ═══════════════════════════════════════════ -->
+  <!-- ═══════ MAIN ═══════ -->
   <main class="main-content">
 
-    <!-- TOP BAR -->
+    <!-- TOPBAR -->
     <header class="topbar">
-      <button class="hamburger" id="btn-hamburger" aria-label="Toggle sidebar">
+      <button class="hamburger" id="btn-hamburger">
         <span></span><span></span><span></span>
       </button>
       <h1 class="topbar-title" id="topbar-title">Búsqueda y Registro</h1>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="btn-refresh-dashboard" title="Actualizar Dashboard" style="display:none">↺</button>
-      </div>
+      <button class="icon-btn" id="btn-refresh-dashboard" title="Actualizar Dashboard" style="display:none">↺ Actualizar</button>
     </header>
 
-    <!-- ─────────────────────────────────────────
-         PANEL: REGISTRO
-    ───────────────────────────────────────── -->
+    <!-- ══ PANEL REGISTRO ══ -->
     <section class="panel active" id="panel-registro">
-      <div class="card" style="max-width:640px; margin:0 auto;">
+      <div class="card form-card">
+
         <div class="card-header">
-          <h2 class="card-title">Buscar Referencia de Pago</h2>
-          <p class="card-subtitle">Ingresa los últimos 4 dígitos de la referencia bancaria</p>
+          <h2 class="card-title">Buscar Referencia Bancaria</h2>
+          <p class="card-subtitle">Ingresa los 6 dígitos de la referencia del pago</p>
         </div>
 
         <div class="search-row">
-          <input type="text" id="search-ref" class="input" placeholder="Ej. 5102" maxlength="4" autocomplete="off" />
+          <input type="text" id="search-ref" class="input" maxlength="6"
+                 placeholder="Ej. 510293" autocomplete="off" />
           <button class="btn btn-primary" id="btn-buscar">Buscar</button>
         </div>
 
         <div id="search-result"></div>
 
-        <!-- Formulario de registro (aparece tras búsqueda exitosa) -->
-        <div id="form-registro" class="registro-form" style="display:none;">
+        <!-- Formulario de conciliación -->
+        <div id="form-registro" style="display:none;">
           <div class="divider"></div>
-          <h3 class="form-section-title">Datos del Evento</h3>
-
+          <h3 class="section-title">Datos del Evento</h3>
           <div class="form-grid">
+
             <div class="form-group full">
               <label class="form-label" for="reg-tipo">Tipo de Evento <span class="required">*</span></label>
-              <select class="input select-input" id="reg-tipo">
+              <select class="input" id="reg-tipo">
                 <option value="">— Seleccionar —</option>
-                <option value="Fiesta Infantil">Fiesta Infantil</option>
-                <option value="Cumpleaños">Cumpleaños</option>
-                <option value="15 años">15 años</option>
-                <option value="Boda">Boda</option>
-                <option value="Promoción">Promoción</option>
-                <option value="Graduación">Graduación</option>
-                <option value="Otros">Otros</option>
+                <option>Fiesta Infantil</option>
+                <option>Cumpleaños</option>
+                <option>15 años</option>
+                <option>Boda</option>
+                <option>Promoción</option>
+                <option>Graduación</option>
+                <option>Otros</option>
               </select>
             </div>
 
@@ -117,28 +103,28 @@
 
             <div class="form-group full">
               <label class="form-label" for="reg-observacion">Observación <span class="optional">(opcional)</span></label>
-              <input type="text" class="input" id="reg-observacion" placeholder="Ej. Cancelación por viaje, nota interna…" />
+              <input type="text" class="input" id="reg-observacion"
+                     placeholder="Nota interna, motivo especial, etc." />
             </div>
-          </div>
 
+          </div>
           <div class="form-actions">
             <button class="btn btn-success btn-lg" id="btn-guardar">✔ Guardar y Conciliar</button>
           </div>
         </div>
+
       </div>
     </section>
 
-    <!-- ─────────────────────────────────────────
-         PANEL: DASHBOARD
-    ───────────────────────────────────────── -->
+    <!-- ══ PANEL DASHBOARD ══ -->
     <section class="panel" id="panel-dashboard">
 
-      <!-- KPI Row -->
+      <!-- KPI Cards -->
       <div class="kpi-row">
         <div class="kpi-card kpi-blue">
           <div class="kpi-icon">🏦</div>
           <div class="kpi-body">
-            <p class="kpi-label">Ingresos Banco</p>
+            <p class="kpi-label">Ingresos Banco (NC)</p>
             <p class="kpi-value" id="kpi-ingresos">—</p>
           </div>
         </div>
@@ -158,16 +144,13 @@
         </div>
       </div>
 
-      <!-- Charts + Tables Row -->
-      <div class="charts-row">
+      <!-- Tablas de desglose -->
+      <div class="tables-row">
 
         <!-- Desglose por Evento -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">Desglose por Evento</h2>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="chart-eventos"></canvas>
+            <h2 class="card-title">Desglose por Tipo de Evento</h2>
           </div>
           <div class="table-wrap">
             <table class="data-table" id="table-eventos">
@@ -179,6 +162,7 @@
               </thead>
               <tbody></tbody>
             </table>
+            <p class="empty-msg" id="empty-eventos" style="display:none">Sin datos conciliados.</p>
           </div>
         </div>
 
@@ -186,12 +170,9 @@
         <div class="card">
           <div class="card-header row-between">
             <h2 class="card-title">Desglose por Colegio</h2>
-            <select id="filter-colegio" class="input select-input filter-select">
+            <select id="filter-colegio" class="input filter-select">
               <option value="">Todos los colegios</option>
             </select>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="chart-colegios"></canvas>
           </div>
           <div class="table-wrap">
             <table class="data-table" id="table-colegios">
@@ -199,29 +180,30 @@
                 <tr>
                   <th>Colegio</th>
                   <th class="align-right">Monto (Bs)</th>
-                  <th class="align-center">Detalle</th>
+                  <th class="align-center">Profesores</th>
                 </tr>
               </thead>
               <tbody id="tbody-colegios"></tbody>
             </table>
+            <p class="empty-msg" id="empty-colegios" style="display:none">Sin colegios registrados.</p>
           </div>
         </div>
 
-      </div><!-- /charts-row -->
+      </div>
     </section>
 
-    <!-- ─────────────────────────────────────────
-         PANEL: REEMBOLSOS
-    ───────────────────────────────────────── -->
+    <!-- ══ PANEL REEMBOLSOS ══ -->
     <section class="panel" id="panel-reembolsos">
-      <div class="card" style="max-width:560px; margin:0 auto;">
+      <div class="card form-card">
+
         <div class="card-header">
-          <h2 class="card-title">Gestión de Cancelaciones</h2>
+          <h2 class="card-title">Gestión de Cancelaciones / Reembolsos</h2>
           <p class="card-subtitle">Busca la referencia que deseas reversar</p>
         </div>
 
         <div class="search-row">
-          <input type="text" id="reemb-ref" class="input" placeholder="Últimos 4 dígitos" maxlength="4" />
+          <input type="text" id="reemb-ref" class="input" maxlength="6"
+                 placeholder="Ej. 510293" autocomplete="off" />
           <button class="btn btn-secondary" id="btn-buscar-reemb">Verificar</button>
         </div>
 
@@ -231,22 +213,24 @@
           <div class="divider"></div>
           <div class="form-group full">
             <label class="form-label" for="reemb-motivo">Motivo de la cancelación</label>
-            <input type="text" class="input" id="reemb-motivo" placeholder="Ej. Cancelación por viaje" />
+            <input type="text" class="input" id="reemb-motivo"
+                   placeholder="Ej. Cancelación por viaje" />
           </div>
-          <div class="form-actions">
-            <button class="btn btn-danger btn-lg" id="btn-procesar-reemb">⚠ Procesar Reembolso Definitivo</button>
+          <div class="form-actions" style="margin-top:16px;">
+            <button class="btn btn-danger btn-lg" id="btn-procesar-reemb">
+              ⚠ Procesar Reembolso Definitivo
+            </button>
           </div>
         </div>
+
       </div>
     </section>
 
-  </main>
+  </main><!-- /main -->
 
-  <!-- ═══════════════════════════════════════════
-       API CONFIG — reemplaza con tu URL real
-  ═══════════════════════════════════════════ -->
+  <!-- ═══════ API URL ═══════ -->
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzJxUSN-Ooont6VyY-HKdBpm4TbZc0T2kDgjwFOVQ7ln-88ZBPqamB6H7yJiugs99Zzlg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxPUoqRdTaQlwp6h1dOKqtnsfBFK0RmWeRZTVrJmmAKS4-vCiPBOhGGweBW7ztAbHNeiQ/exec";
   </script>
   <script src="app.js"></script>
 </body>
