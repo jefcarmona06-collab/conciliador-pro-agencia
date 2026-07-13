@@ -75,13 +75,12 @@
 
   function switchPanel(panelId) {
     document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-
+    document.querySelectorAll(".nav-tab").forEach(n => n.classList.remove("active"));
+    
     const panel = document.getElementById(panelId);
     if (panel) panel.classList.add("active");
 
-    // Buscar el nav-item que tiene data-panel igual
-    const nav = document.querySelector(`.nav-item[data-panel="${panelId}"]`);
+    const nav = document.querySelector(`.nav-tab[data-panel="${panelId}"]`);
     if (nav) nav.classList.add("active");
 
     const titleEl = document.getElementById("topbar-title");
@@ -92,20 +91,9 @@
 
     if (panelId === "panel-dashboard") loadDashboard();
 
-    // Cierra sidebar en móvil
-    document.getElementById("sidebar").classList.remove("open");
-  }
-
-  document.querySelectorAll(".nav-item").forEach(btn => {
+  document.querySelectorAll(".nav-tab").forEach(btn => {
     btn.addEventListener("click", () => switchPanel(btn.dataset.panel));
   });
-
-  const hamburger = document.getElementById("btn-hamburger");
-  if (hamburger) {
-    hamburger.addEventListener("click", () => {
-      document.getElementById("sidebar").classList.toggle("open");
-    });
-  }
 
   /* ────────────────────────────────────────────────────
      BÚSQUEDA Y REGISTRO
@@ -332,7 +320,7 @@
           <td class="align-right fw-bold">${formatBs(total)}</td>
           <td class="align-center">
             ${hasProfs
-              ? `<button class="toggle-btn" data-target="prof-${idx}">Ver ▾</button>`
+              ? `<button class="btn-icon toggle-btn" data-target="prof-${idx}"><span class="material-symbols-outlined pointer-events-none">expand_more</span></button>`
               : `<span style="color:var(--text-muted)">—</span>`}
           </td>`;
         tbody.appendChild(trMain);
@@ -361,7 +349,7 @@
             const sub  = document.getElementById(this.dataset.target);
             const open = sub.classList.toggle("open");
             this.classList.toggle("open", open);
-            this.textContent = open ? "Ocultar ▴" : "Ver ▾";
+            this.querySelector("span").textContent = open ? "expand_less" : "expand_more";
           });
         }
       });

@@ -5,76 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Conciliador Pro</title>
   <meta name="description" content="Sistema de conciliación de pagos bancarios." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  
+  <!-- Floating Background Atmosphere Elements -->
+  <div class="bg-orb-1"></div>
+  <div class="bg-orb-2"></div>
 
-  <!-- ═══════ SIDEBAR ═══════ -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <span class="brand-icon">💸</span>
-      <span class="brand-text">Conciliador Pro</span>
+  <!-- Header / TopNavBar -->
+  <header class="header">
+    <div class="container header-inner">
+      <!-- Brand Logo -->
+      <div class="brand">
+        <h1>Conciliador Pro</h1>
+        <span class="material-symbols-outlined" style="color:var(--primary); font-size:2.5rem; font-variation-settings: 'FILL' 1;">payments</span>
+      </div>
+      
+      <!-- Navigation Links (Tabs) -->
+      <nav class="top-nav">
+        <button class="nav-tab active" data-panel="panel-registro">
+          Búsqueda y Registro
+        </button>
+        <button class="nav-tab" data-panel="panel-dashboard">
+          Dashboard
+        </button>
+        <button class="nav-tab" data-panel="panel-reembolsos">
+          Reembolsos
+        </button>
+      </nav>
     </div>
-    <nav class="sidebar-nav">
-      <button class="nav-item active" data-panel="panel-registro">
-        <span class="nav-icon">🔍</span>
-        <span class="nav-label">Búsqueda y Registro</span>
-      </button>
-      <button class="nav-item" data-panel="panel-dashboard" id="nav-dashboard">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Dashboard</span>
-      </button>
-      <button class="nav-item" data-panel="panel-reembolsos">
-        <span class="nav-icon">↩️</span>
-        <span class="nav-label">Reembolsos</span>
-      </button>
-    </nav>
-    <div class="sidebar-footer">
-      <span class="version-badge">v3.1</span>
-    </div>
-  </aside>
+  </header>
 
-  <!-- ═══════ MAIN ═══════ -->
-  <main class="main-content">
-
-    <!-- TOPBAR -->
-    <header class="topbar">
-      <button class="hamburger" id="btn-hamburger">
-        <span></span><span></span><span></span>
-      </button>
-      <h1 class="topbar-title" id="topbar-title">Búsqueda y Registro</h1>
-      <button class="icon-btn" id="btn-refresh-dashboard" title="Actualizar Dashboard" style="display:none">↺ Actualizar</button>
-    </header>
-
-    <!-- ══ PANEL REGISTRO ══ -->
+  <!-- Main Content -->
+  <main class="container">
+    
+    <!-- ==== PANEL REGISTRO ==== -->
     <section class="panel active" id="panel-registro">
-      <div class="card form-card">
-
-        <div class="card-header">
-          <h2 class="card-title">Buscar Referencia Bancaria</h2>
-          <p class="card-subtitle">Ingresa los 6 dígitos de la referencia del pago</p>
-        </div>
-
-        <div class="search-row">
+      <div class="glass-card form-card">
+        <h2 class="form-title">Buscar Referencia Bancaria</h2>
+        
+        <div class="input-group">
           <input type="text" id="search-ref" class="input" maxlength="6"
-                 placeholder="Ej. 510293" autocomplete="off" />
+                 placeholder="Ingrese últimos 6 dígitos de la referencia..." autocomplete="off" />
           <button class="btn btn-primary" id="btn-buscar">Buscar</button>
         </div>
-
+        
         <div id="search-result"></div>
 
-        <!-- Formulario de conciliación -->
         <div id="form-registro" style="display:none;">
           <div class="divider"></div>
-          <h3 class="section-title">Datos del Evento</h3>
+          <h2 class="form-title">Registrar Evento</h2>
+          
           <div class="form-grid">
-
-            <div class="form-group full">
-              <label class="form-label" for="reg-tipo">Tipo de Evento <span class="required">*</span></label>
-              <select class="input" id="reg-tipo">
+            <div class="form-group">
+              <label class="form-label" for="reg-tipo">Tipo de Evento *</label>
+              <select class="select" id="reg-tipo">
                 <option value="">— Seleccionar —</option>
                 <option>Fiesta Infantil</option>
                 <option>Cumpleaños</option>
@@ -87,70 +73,71 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="reg-fecha">Fecha del Evento <span class="optional">(opcional)</span></label>
+              <label class="form-label" for="reg-fecha">Fecha del Evento *</label>
               <input type="date" class="input" id="reg-fecha" />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="reg-colegio">Colegio <span class="optional">(opcional)</span></label>
+              <label class="form-label" for="reg-colegio">Colegio (opcional)</label>
               <input type="text" class="input" id="reg-colegio" placeholder="Nombre del colegio" />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="reg-profesor">Profesor <span class="optional">(opcional)</span></label>
+              <label class="form-label" for="reg-profesor">Profesor (opcional)</label>
               <input type="text" class="input" id="reg-profesor" placeholder="Nombre del profesor" />
             </div>
 
             <div class="form-group full">
-              <label class="form-label" for="reg-observacion">Observación <span class="optional">(opcional)</span></label>
-              <input type="text" class="input" id="reg-observacion"
-                     placeholder="Nota interna, motivo especial, etc." />
+              <label class="form-label" for="reg-observacion">Observación (opcional)</label>
+              <input type="text" class="input" id="reg-observacion" placeholder="Ej. Cancelación por viaje, nota interna, etc." />
             </div>
-
-          </div>
-          <div class="form-actions">
-            <button class="btn btn-success btn-lg" id="btn-guardar">✔ Guardar y Conciliar</button>
+            
+            <div class="form-group full" style="margin-top: 16px; align-items: flex-end;">
+              <button class="btn btn-primary" id="btn-guardar" style="width:100%; max-width: 300px;">Guardar y Conciliar</button>
+            </div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- ══ PANEL DASHBOARD ══ -->
+    <!-- ==== PANEL DASHBOARD ==== -->
     <section class="panel" id="panel-dashboard">
-
-      <!-- KPI Cards -->
-      <div class="kpi-row">
-        <div class="kpi-card kpi-blue">
-          <div class="kpi-icon">🏦</div>
-          <div class="kpi-body">
-            <p class="kpi-label">Ingresos Banco (NC)</p>
-            <p class="kpi-value" id="kpi-ingresos">—</p>
+      
+      <!-- KPI Row -->
+      <div class="kpi-grid">
+        <!-- KPI 1 -->
+        <div class="glass-card kpi-card kpi-primary hover-lift">
+          <p class="kpi-label">Ingresos Banco</p>
+          <div class="kpi-val-row">
+            <span class="kpi-number" id="kpi-ingresos">—</span>
           </div>
         </div>
-        <div class="kpi-card kpi-red">
-          <div class="kpi-icon">↩</div>
-          <div class="kpi-body">
-            <p class="kpi-label">Total Reembolsado</p>
-            <p class="kpi-value" id="kpi-reembolsos">—</p>
+        
+        <!-- KPI 2 -->
+        <div class="glass-card kpi-card kpi-error hover-lift">
+          <p class="kpi-label">Total Reembolsado</p>
+          <div class="kpi-val-row">
+            <span class="kpi-number" id="kpi-reembolsos">—</span>
           </div>
         </div>
-        <div class="kpi-card kpi-green">
-          <div class="kpi-icon">✅</div>
-          <div class="kpi-body">
-            <p class="kpi-label">Monto Neto Conciliado</p>
-            <p class="kpi-value" id="kpi-neto">—</p>
+        
+        <!-- KPI 3 -->
+        <div class="glass-card kpi-card kpi-success hover-lift">
+          <p class="kpi-label">Monto Neto (Conciliado)</p>
+          <div class="kpi-val-row">
+            <span class="kpi-number" id="kpi-neto">—</span>
           </div>
         </div>
       </div>
 
-      <!-- Tablas de desglose -->
-      <div class="tables-row">
-
-        <!-- Desglose por Evento -->
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Desglose por Tipo de Evento</h2>
+      <!-- Tables Row -->
+      <div class="tables-grid">
+        
+        <!-- Table 1: Desglose por Evento -->
+        <div class="glass-card table-card">
+          <div class="table-header">
+            <span class="material-symbols-outlined" style="color:var(--primary);">celebration</span>
+            <h2>Desglose por Evento</h2>
           </div>
           <div class="table-wrap">
             <table class="data-table" id="table-eventos">
@@ -162,15 +149,18 @@
               </thead>
               <tbody></tbody>
             </table>
-            <p class="empty-msg" id="empty-eventos" style="display:none">Sin datos conciliados.</p>
+            <p class="empty-msg" id="empty-eventos" style="display:none;">Sin datos conciliados.</p>
           </div>
         </div>
 
-        <!-- Desglose por Colegio -->
-        <div class="card">
-          <div class="card-header row-between">
-            <h2 class="card-title">Desglose por Colegio</h2>
-            <select id="filter-colegio" class="input filter-select">
+        <!-- Table 2: Desglose por Colegio -->
+        <div class="glass-card table-card">
+          <div class="table-header" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="material-symbols-outlined" style="color:var(--primary);">school</span>
+              <h2>Desglose por Colegio</h2>
+            </div>
+            <select id="filter-colegio" class="select" style="width: auto; padding: 6px 12px; font-size: 0.85rem;">
               <option value="">Todos los colegios</option>
             </select>
           </div>
@@ -180,57 +170,58 @@
                 <tr>
                   <th>Colegio</th>
                   <th class="align-right">Monto (Bs)</th>
-                  <th class="align-center">Profesores</th>
+                  <th class="align-center">Detalle</th>
                 </tr>
               </thead>
               <tbody id="tbody-colegios"></tbody>
             </table>
-            <p class="empty-msg" id="empty-colegios" style="display:none">Sin colegios registrados.</p>
+            <p class="empty-msg" id="empty-colegios" style="display:none;">Sin colegios registrados.</p>
           </div>
         </div>
-
       </div>
+
+      <div style="display: flex; justify-content: center;">
+        <button class="btn btn-secondary" id="btn-refresh-dashboard" style="width: 100%; max-width: 400px; gap: 12px;">
+          <span class="material-symbols-outlined">sync</span>
+          Actualizar Dashboard
+        </button>
+      </div>
+
     </section>
 
-    <!-- ══ PANEL REEMBOLSOS ══ -->
+    <!-- ==== PANEL REEMBOLSOS ==== -->
     <section class="panel" id="panel-reembolsos">
-      <div class="card form-card">
-
-        <div class="card-header">
-          <h2 class="card-title">Gestión de Cancelaciones / Reembolsos</h2>
-          <p class="card-subtitle">Busca la referencia que deseas reversar</p>
+      <div class="glass-card form-card">
+        <h2 class="form-title">Gestión de Cancelaciones / Devoluciones</h2>
+        
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label class="form-label" style="margin-bottom: 8px;">Buscar Referencia a Reversar (Últimos 6 dígitos):</label>
+          <div class="input-group">
+            <input type="text" id="reemb-ref" class="input" maxlength="6"
+                   placeholder="Ej. 510293" autocomplete="off" />
+            <button class="btn btn-secondary" id="btn-buscar-reemb">Verificar</button>
+          </div>
         </div>
-
-        <div class="search-row">
-          <input type="text" id="reemb-ref" class="input" maxlength="6"
-                 placeholder="Ej. 510293" autocomplete="off" />
-          <button class="btn btn-secondary" id="btn-buscar-reemb">Verificar</button>
-        </div>
-
+        
         <div id="reemb-result"></div>
 
         <div id="form-reembolso" style="display:none;">
           <div class="divider"></div>
-          <div class="form-group full">
-            <label class="form-label" for="reemb-motivo">Motivo de la cancelación</label>
-            <input type="text" class="input" id="reemb-motivo"
-                   placeholder="Ej. Cancelación por viaje" />
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label class="form-label">Motivo de la cancelación:</label>
+            <input type="text" class="input" id="reemb-motivo" placeholder="Ej. Cancelación por viaje" />
           </div>
-          <div class="form-actions" style="margin-top:16px;">
-            <button class="btn btn-danger btn-lg" id="btn-procesar-reemb">
-              ⚠ Procesar Reembolso Definitivo
-            </button>
-          </div>
+          <button class="btn btn-danger" id="btn-procesar-reemb">
+            Procesar Reembolso Definitivo
+          </button>
         </div>
-
       </div>
     </section>
 
-  </main><!-- /main -->
+  </main>
 
-  <!-- ═══════ API URL ═══════ -->
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzJxUSN-Ooont6VyY-HKdBpm4TbZc0T2kDgjwFOVQ7ln-88ZBPqamB6H7yJiugs99Zzlg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyDYIGKtJTqG2Q95ixw3BdeKL44NYLRO9fftRwCHBFAKF7anf0Hzyy3QFv3jRnQQCjvjA/exec";
   </script>
   <script src="app.js"></script>
 </body>
