@@ -116,9 +116,9 @@
   btnBuscar && btnBuscar.addEventListener("click", async () => {
     const ref = document.getElementById("search-ref").value.trim();
 
-    if (!/^\d{4}$/.test(ref)) {
+    if (!/^\d{6}$/.test(ref)) {
       showAlert("search-result", "warning", "⚠️",
-        "Ingresa exactamente <strong>4 dígitos</strong> de la referencia.");
+        "Ingresa exactamente <strong>6 dígitos</strong> de la referencia.");
       return;
     }
 
@@ -396,9 +396,9 @@
   btnBuscarReemb && btnBuscarReemb.addEventListener("click", async () => {
     const ref = document.getElementById("reemb-ref").value.trim();
 
-    if (!/^\d{4}$/.test(ref)) {
+    if (!/^\d{6}$/.test(ref)) {
       showAlert("reemb-result", "warning", "⚠️",
-        "Ingresa exactamente <strong>4 dígitos</strong>.");
+        "Ingresa exactamente <strong>6 dígitos</strong>.");
       return;
     }
 
