@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conciliador Pro v3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="text-center mb-5 text-white title-glow">Conciliador Pro 💸</h1>
+        
+        <ul class="nav nav-pills justify-content-center mb-4 glass-nav" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-registro" data-bs-toggle="pill" data-bs-target="#panel-registro" type="button">🔍 Búsqueda y Registro</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-dashboard" data-bs-toggle="pill" data-bs-target="#panel-dashboard" type="button">📊 Dashboard</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-reembolsos" data-bs-toggle="pill" data-bs-target="#panel-reembolsos" type="button">↩️ Reembolsos</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+            <!-- REGISTRO -->
+            <div class="tab-pane fade show active" id="panel-registro" role="tabpanel">
+                <div class="glass-card">
+                    <h3 class="mb-4 text-white">Registro de Eventos</h3>
+                    <div class="input-group mb-3">
+                        <input type="text" id="search-ref" class="form-control form-control-lg" placeholder="Ingrese los últimos 4 dígitos de la referencia..." maxlength="4">
+                        <button class="btn btn-primary px-4" type="button" id="btn-buscar">Buscar</button>
+                    </div>
+                    <div id="search-result" class="mb-4"></div>
+                    
+                    <div id="form-registro" style="display: none;" class="text-white mt-4 pt-3 border-top border-secondary">
+                        <h4>Registrar Nuevo Titular</h4>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">ID / Cédula *</label>
+                                <input type="text" class="form-control" id="reg-id">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre del Titular *</label>
+                                <input type="text" class="form-control" id="reg-nombre">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tipo de Evento *</label>
+                                <select class="form-select" id="reg-tipo">
+                                    <option value="Fiesta Infantil">Fiesta Infantil</option>
+                                    <option value="Cumpleaños">Cumpleaños</option>
+                                    <option value="15 años">15 años</option>
+                                    <option value="Boda">Boda</option>
+                                    <option value="Promoción">Promoción</option>
+                                    <option value="Graduación">Graduación</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fecha del Evento</label>
+                                <input type="date" class="form-control" id="reg-fecha">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Colegio (Opcional, para Promociones)</label>
+                                <input type="text" class="form-control" id="reg-colegio">
+                            </div>
+                            <div class="col-12 text-end mt-4">
+                                <button class="btn btn-success btn-lg px-5 shadow" id="btn-guardar">Guardar y Conciliar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD -->
+            <div class="tab-pane fade" id="panel-dashboard" role="tabpanel">
+                <div class="row text-center mb-4 g-4" id="kpi-container">
+                    <div class="col-md-4">
+                        <div class="glass-card kpi-card border-primary">
+                            <p class="text-white-50 mb-1">Ingresos Banco</p>
+                            <h3 id="kpi-ingresos" class="text-primary fw-bold">Cargando...</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card kpi-card border-danger">
+                            <p class="text-white-50 mb-1">Total Reembolsado</p>
+                            <h3 id="kpi-reembolsos" class="text-danger fw-bold">Cargando...</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card kpi-card border-success">
+                            <p class="text-white-50 mb-1">Monto Neto Conciliado</p>
+                            <h3 id="kpi-neto" class="text-success fw-bold">Cargando...</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-card text-white">
+                    <h4 class="mb-3">Desglose por Tipo de Evento</h4>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-borderless" id="table-eventos">
+                            <thead>
+                                <tr class="border-bottom border-secondary">
+                                    <th>Tipo de Evento</th>
+                                    <th class="text-end">Monto Conciliado (Bs)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Llenado por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-outline-light btn-sm mt-3 w-100" id="btn-refresh-dashboard">Actualizar Dashboard</button>
+                </div>
+            </div>
+
+            <!-- REEMBOLSOS -->
+            <div class="tab-pane fade" id="panel-reembolsos" role="tabpanel">
+                <div class="glass-card text-white">
+                    <h3 class="mb-4">Gestión de Cancelaciones / Devoluciones</h3>
+                    <div class="mb-3">
+                        <label class="form-label">Buscar Referencia a Reversar (Últimos 4 dígitos):</label>
+                        <div class="input-group mb-3">
+                            <input type="text" id="reemb-ref" class="form-control form-control-lg" placeholder="Ej. 5102" maxlength="4">
+                            <button class="btn btn-secondary px-4" type="button" id="btn-buscar-reemb">Verificar</button>
+                        </div>
+                    </div>
+                    
+                    <div id="reemb-result" class="mb-3"></div>
+                    
+                    <div id="form-reembolso" style="display: none;" class="mt-4 pt-3 border-top border-secondary">
+                        <div class="mb-3">
+                            <label class="form-label">Motivo de la cancelación:</label>
+                            <input type="text" class="form-control" id="reemb-motivo" placeholder="Ej. Cancelación por viaje">
+                        </div>
+                        <button class="btn btn-danger btn-lg w-100 shadow" id="btn-procesar-reemb">Procesar Reembolso Definitivo</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Configuración del API -->
+    <script>
+        // PEGA AQUÍ LA URL DE TU GOOGLE APPS SCRIPT AL DESPLEGARLO
+        const API_URL = "https://script.google.com/macros/s/AKfycbz3oWIKacPh9GOYkBgR0QBt5IJoIANjFakP_o5OaClk3TuIXO9BhDq6EPMZRtcVF408wg/exec"; 
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
